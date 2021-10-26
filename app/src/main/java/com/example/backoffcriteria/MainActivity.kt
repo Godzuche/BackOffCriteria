@@ -2,9 +2,11 @@ package com.example.backoffcriteria
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.backoffcriteria.databinding.ActivityMainBinding
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -22,6 +24,17 @@ class MainActivity : AppCompatActivity() {
 
         btnWorkerFail.setOnClickListener {
             val workRequest = OneTimeWorkRequestBuilder<WorkerFail>().build()
+            workManager.enqueue(workRequest)
+        }
+
+        btnWorkerRetry.setOnClickListener {
+            val workRequest = OneTimeWorkRequestBuilder<WorkerRetry>()
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    10,
+                    TimeUnit.SECONDS
+                )
+                .build()
             workManager.enqueue(workRequest)
         }
     }
